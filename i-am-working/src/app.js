@@ -134,7 +134,7 @@ export function createApp(root) {
       return;
     }
     if (state.status === "error") {
-      ui.stage.innerHTML = `<div class="stage-msg error"><p><strong>Couldn’t open that URL</strong></p><p>${escapeHtml(state.error)}</p><p class="hint">Try a demo link, Reddit, Hacker News, or a public article.</p></div>`;
+      ui.stage.innerHTML = `<div class="stage-msg error"><p><strong>Couldn’t open that URL</strong></p><pre class="error-detail">${escapeHtml(state.error)}</pre><p class="hint">Use <code>python3 server.py</code> (not <code>http.server</code>) so the local proxy can load sites like Gutenberg.</p></div>`;
       return;
     }
     if (!state.doc) {

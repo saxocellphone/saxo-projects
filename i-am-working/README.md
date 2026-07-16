@@ -10,30 +10,36 @@ MSOutlookit-style: the site is *regenerated* into a full app chrome — not just
 | **Technical docs** | Reference reading with a TOC |
 | **Outlook** | Reddit listings, HN, threads (inbox + reading pane) |
 
-## Run
+## Run (important)
+
+Use the bundled server so the app can fetch **any public URL** (avoids browser CORS):
 
 ```bash
 cd i-am-working
-python3 -m http.server 5173
-# open http://localhost:5173
+python3 server.py
+# → http://127.0.0.1:5173
 ```
+
+`python3 -m http.server` only serves files — **no proxy**, so sites like Project Gutenberg will fail with CORS.
 
 Deep links:
 
 ```
-http://localhost:5173/?url=demo://reddit&shell=outlook
-http://localhost:5173/?url=https://news.ycombinator.com/&shell=outlook
+http://127.0.0.1:5173/?url=demo://reddit&shell=outlook
+http://127.0.0.1:5173/?url=https://news.ycombinator.com/&shell=outlook
+http://127.0.0.1:5173/?url=https://www.gutenberg.org/files/9662/9662-h/9662-h.htm&shell=google-docs
 ```
 
 ## How fetch works
 
-1. **Adapters** for structured sites (no HTML scrape):
+1. **Same-origin proxy** — `GET /api/fetch?url=…` (via `server.py`) for arbitrary public pages  
+2. **Adapters** for structured sites:
    - Reddit → public `.json`
    - Hacker News → Algolia API
-2. **Generic pages**: direct fetch → CORS relay → [Jina Reader](https://r.jina.ai) fallback
-3. **Demos** (`demo://article`, `demo://reddit`, `demo://hn`) work offline
+3. **Browser fallbacks** if the proxy isn’t running: direct → public CORS relays → Jina  
+4. **Demos** (`demo://article`, `demo://reddit`, `demo://hn`) work offline
 
-Many sites block browsers; demos and Reddit/HN are the reliable path. A dedicated same-origin fetch proxy is the natural next upgrade.
+The proxy refuses private/loopback targets (SSRF guard) and caps response size.
 
 ## Architecture
 
