@@ -44,6 +44,43 @@ body {
   z-index: 20;
 }
 
+#app.chrome-hidden .chrome {
+  display: none;
+}
+
+/* Floating reveal when bar is hidden — immersive shell view */
+.chrome-reveal {
+  position: fixed;
+  top: 0.65rem;
+  right: 0.75rem;
+  z-index: 50;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(18, 21, 28, 0.88);
+  color: #e8ecf4;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  opacity: 0.55;
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+
+.chrome-reveal:hover,
+.chrome-reveal:focus-visible {
+  opacity: 1;
+  outline: none;
+  background: rgba(28, 34, 48, 0.95);
+  transform: translateY(1px);
+}
+
+#app:not(.chrome-hidden) .chrome-reveal {
+  display: none;
+}
+
 .chrome-row {
   display: flex;
   align-items: center;
@@ -120,6 +157,16 @@ body {
   border-color: transparent;
   color: #fff;
   font-weight: 600;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--chrome-muted);
+}
+
+.btn.ghost:hover:not(:disabled) {
+  color: var(--chrome-text);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .shell-select {

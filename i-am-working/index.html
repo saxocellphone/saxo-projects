@@ -37,6 +37,14 @@
           <select id="shell-select" class="shell-select" title="Reading interface"></select>
 
           <button type="button" id="btn-original" class="btn" disabled>Open original</button>
+          <button
+            type="button"
+            id="btn-hide-chrome"
+            class="btn ghost"
+            title="Hide top bar (press b to toggle)"
+          >
+            Hide bar
+          </button>
           <span id="status">Ready</span>
         </div>
 
@@ -45,6 +53,17 @@
           <div id="demo-links"></div>
         </div>
       </header>
+
+      <button
+        type="button"
+        id="btn-show-chrome"
+        class="chrome-reveal"
+        hidden
+        title="Show top bar (press b to toggle)"
+        aria-label="Show top bar"
+      >
+        ◈ Show bar
+      </button>
 
       <main id="stage" aria-live="polite"></main>
     </div>
