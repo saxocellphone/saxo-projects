@@ -3,139 +3,64 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>I Am Working — restyle any page</title>
+    <title>I Am Working — open any URL as the app you want</title>
     <meta
       name="description"
-      content="Turn any HTML page or pasted text into technical docs, Google Docs, and other reading formats."
+      content="Paste a URL. Regenerate the site as Google Docs, technical documentation, or Outlook — MSOutlookit-style."
     />
     <link rel="stylesheet" href="styles/app.css" />
-    <link rel="stylesheet" href="styles/formats/tech-docs.css" />
-    <link rel="stylesheet" href="styles/formats/google-docs.css" />
-    <link rel="stylesheet" href="styles/formats/medium.css" />
-    <link rel="stylesheet" href="styles/formats/newspaper.css" />
-    <link rel="stylesheet" href="styles/formats/email.css" />
-    <link rel="stylesheet" href="styles/formats/reddit.css" />
-    <link rel="stylesheet" href="styles/formats/manpage.css" />
-    <link rel="stylesheet" href="styles/formats/academic.css" />
+    <link rel="stylesheet" href="styles/shells/google-docs.css" />
+    <link rel="stylesheet" href="styles/shells/tech-docs.css" />
+    <link rel="stylesheet" href="styles/shells/outlook.css" />
   </head>
   <body>
-    <div class="shell">
-      <header class="topbar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">◈</span>
-          <div>
-            <h1>I Am Working</h1>
-            <p class="tagline">Any page → the format you want to read in</p>
+    <div id="app">
+      <header class="chrome" aria-label="I Am Working controls">
+        <div class="chrome-row">
+          <div class="brand" title="I Am Working">
+            <span class="brand-mark" aria-hidden="true">◈</span>
+            <span>I Am Working</span>
           </div>
+
+          <div class="url-form">
+            <input
+              id="url-input"
+              type="url"
+              placeholder="Paste a URL (article, Reddit, HN…)"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="button" id="btn-open" class="btn primary">Open</button>
+          </div>
+
+          <label class="visually-hidden" for="shell-select">Shell</label>
+          <select id="shell-select" class="shell-select" title="Reading interface"></select>
+
+          <button type="button" id="btn-original" class="btn" disabled>Open original</button>
+          <span id="status">Ready</span>
         </div>
-        <div class="top-actions">
-          <button type="button" id="btn-copy" class="btn ghost" title="Copy restyled HTML">
-            Copy HTML
-          </button>
-          <button type="button" id="btn-print" class="btn primary" title="Print or save as PDF">
-            Print / PDF
-          </button>
+
+        <div class="chrome-row demo-row">
+          <span class="demo-label">Try</span>
+          <div id="demo-links"></div>
         </div>
       </header>
 
-      <main class="layout">
-        <section class="panel input-panel" aria-label="Source">
-          <div class="panel-head">
-            <h2>Source</h2>
-            <div class="tabs" role="tablist">
-              <button type="button" class="tab active" data-tab="paste" role="tab" aria-selected="true">
-                Paste
-              </button>
-              <button type="button" class="tab" data-tab="url" role="tab" aria-selected="false">
-                URL
-              </button>
-              <button type="button" class="tab" data-tab="sample" role="tab" aria-selected="false">
-                Samples
-              </button>
-            </div>
-          </div>
-
-          <div id="tab-paste" class="tab-body">
-            <label class="field">
-              <span>HTML or plain text</span>
-              <textarea
-                id="source-html"
-                rows="14"
-                placeholder="Paste article HTML, a Reddit post, email body, or plain text…"
-                spellcheck="false"
-              ></textarea>
-            </label>
-          </div>
-
-          <div id="tab-url" class="tab-body hidden">
-            <label class="field">
-              <span>Page URL</span>
-              <div class="row">
-                <input
-                  id="source-url"
-                  type="url"
-                  placeholder="https://example.com/article"
-                  autocomplete="off"
-                />
-                <button type="button" id="btn-fetch" class="btn primary">Fetch</button>
-              </div>
-            </label>
-            <p class="hint">
-              Browsers block most cross-origin fetches (CORS). If fetch fails, open the page,
-              copy the content, and use <strong>Paste</strong>.
-            </p>
-            <p id="fetch-status" class="status" hidden></p>
-          </div>
-
-          <div id="tab-sample" class="tab-body hidden">
-            <p class="hint">Load a demo source to try formats instantly.</p>
-            <div class="sample-grid">
-              <button type="button" class="sample-card" data-sample="article">
-                <strong>Long article</strong>
-                <span>Blog-style essay with headings</span>
-              </button>
-              <button type="button" class="sample-card" data-sample="reddit">
-                <strong>Reddit thread</strong>
-                <span>Post + nested comments</span>
-              </button>
-              <button type="button" class="sample-card" data-sample="docs">
-                <strong>API notes</strong>
-                <span>Informal engineering write-up</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="panel-foot">
-            <label class="field compact">
-              <span>Title override (optional)</span>
-              <input id="title-override" type="text" placeholder="Leave blank to auto-detect" />
-            </label>
-          </div>
-        </section>
-
-        <section class="panel format-panel" aria-label="Format">
-          <div class="panel-head">
-            <h2>Format</h2>
-          </div>
-          <div id="format-list" class="format-list" role="listbox" aria-label="Reading formats"></div>
-          <label class="field compact density">
-            <span>Text size</span>
-            <input id="font-scale" type="range" min="90" max="130" value="100" />
-          </label>
-        </section>
-
-        <section class="panel preview-panel" aria-label="Preview">
-          <div class="panel-head">
-            <h2>Preview</h2>
-            <span id="preview-meta" class="meta"></span>
-          </div>
-          <div id="preview-frame" class="preview-frame">
-            <article id="preview" class="format-tech-docs" data-format="tech-docs"></article>
-          </div>
-        </section>
-      </main>
+      <main id="stage" aria-live="polite"></main>
     </div>
 
+    <style>
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+    </style>
     <script type="module" src="src/main.js"></script>
   </body>
 </html>

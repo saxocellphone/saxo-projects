@@ -1,27 +1,51 @@
 # I Am Working
 
-Turn any HTML page (or pasted text) into a reading format you choose.
+**Paste a URL. Work in the interface you wish it had.**
 
-Examples:
+MSOutlookit-style: the site is *regenerated* into a full app chrome — not just restyled text.
 
-- Read an article as **technical documentation**
-- Restyle a Reddit thread to look like **Google Docs**
-- Browse a blog post as a **newspaper**, **email**, or **man page**
+| Shell | Best for |
+|---|---|
+| **Google Docs** | Articles / longform |
+| **Technical docs** | Reference reading with a TOC |
+| **Outlook** | Reddit listings, HN, threads (inbox + reading pane) |
 
 ## Run
-
-Open `index.html` in a browser, or serve the folder:
 
 ```bash
 cd i-am-working
 python3 -m http.server 5173
-# then open http://localhost:5173
+# open http://localhost:5173
 ```
 
-## How it works
+Deep links:
 
-1. **Paste** HTML/text, or enter a URL (same-origin or CORS-friendly only — otherwise paste the page source).
-2. Pick a **format preset** (docs, Google Docs, Medium, newspaper, …).
-3. Preview live; **copy HTML** or **print / save as PDF**.
+```
+http://localhost:5173/?url=demo://reddit&shell=outlook
+http://localhost:5173/?url=https://news.ycombinator.com/&shell=outlook
+```
 
-All processing runs in the browser. Nothing is uploaded.
+## How fetch works
+
+1. **Adapters** for structured sites (no HTML scrape):
+   - Reddit → public `.json`
+   - Hacker News → Algolia API
+2. **Generic pages**: direct fetch → CORS relay → [Jina Reader](https://r.jina.ai) fallback
+3. **Demos** (`demo://article`, `demo://reddit`, `demo://hn`) work offline
+
+Many sites block browsers; demos and Reddit/HN are the reliable path. A dedicated same-origin fetch proxy is the natural next upgrade.
+
+## Architecture
+
+```
+URL → ingest (adapter | html) → Doc model → shell (Docs | tech-docs | Outlook)
+```
+
+- `src/model.js` — shell-agnostic document
+- `src/ingest/` — fetch + site adapters
+- `src/shells/` — full UI chrome renderers
+- `src/app.js` — URL bar, shell switch, deep links
+
+## Project
+
+Runko app: `i-am-working` (`PROJECT.yaml`).
