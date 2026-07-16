@@ -3,7 +3,7 @@ name: hello
 type: library
 language: go
 owners:
-    - user:saxo
+    - user:admin
 capabilities:
     - build
 capability_config:
