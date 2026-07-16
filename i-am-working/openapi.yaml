@@ -1,0 +1,208 @@
+# i-am-working REST contract (§13.3.1): mandatory while the http
+# capability is declared - receive refuses a push that deletes it.
+# Consumers generate clients from THIS file and declare a dependency
+# edge on i-am-working.
+openapi: 3.1.0
+info:
+  title: i-am-working
+  version: 0.1.0
+  description: >
+    URL-in site regeneration API. Fetch a public page and return a
+    shell-agnostic document model for the frontend to render.
+servers:
+  - url: http://127.0.0.1:8787
+    description: Local API (npm run dev:server)
+paths:
+  /healthz:
+    get:
+      operationId: getHealth
+      summary: Liveness
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /api/v1/shells:
+    get:
+      operationId: listShells
+      summary: Available reading shells
+      responses:
+        "200":
+          description: Shell catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [shells]
+                properties:
+                  shells:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Shell"
+  /api/v1/demos:
+    get:
+      operationId: listDemos
+      summary: Offline demo document URLs
+      responses:
+        "200":
+          description: Demo links
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [demos]
+                properties:
+                  demos:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DemoLink"
+  /api/v1/documents:
+    post:
+      operationId: createDocument
+      summary: Fetch a URL and return a normalized document
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentRequest"
+      responses:
+        "200":
+          description: Normalized document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: Upstream fetch failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Health:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Shell:
+      type: object
+      required: [id, label, description]
+      properties:
+        id:
+          type: string
+          enum: [google-docs, tech-docs, outlook]
+        label:
+          type: string
+        description:
+          type: string
+        bestFor:
+          type: array
+          items:
+            type: string
+    DemoLink:
+      type: object
+      required: [url, label]
+      properties:
+        url:
+          type: string
+        label:
+          type: string
+    CreateDocumentRequest:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          description: Public http(s) URL or demo:// scheme
+    Block:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [p, h2, h3, blockquote, code, ul, ol, html]
+        text:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+        safeHtml:
+          type: string
+    Item:
+      type: object
+      required: [id, title, body]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+        preview:
+          type: string
+        author:
+          type: string
+        body:
+          type: array
+          items:
+            $ref: "#/components/schemas/Block"
+    Document:
+      type: object
+      required: [sourceUrl, title, kind, sections]
+      properties:
+        sourceUrl:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        summary:
+          type: string
+        kind:
+          type: string
+          enum: [article, thread, listing, unknown]
+        site:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Block"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+        activeItemId:
+          type: string
+        nav:
+          type: array
+          items:
+            type: object
+            required: [id, label]
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              url:
+                type: string
+        fetchedAt:
+          type: string
+          format: date-time
