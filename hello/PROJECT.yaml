@@ -1,0 +1,13 @@
+schema: project/v1
+name: hello
+type: library
+language: go
+owners:
+    - user:saxo
+capabilities:
+    - build
+capability_config:
+    build:
+        engine: bazel
+        target_patterns:
+            - //hello/...
