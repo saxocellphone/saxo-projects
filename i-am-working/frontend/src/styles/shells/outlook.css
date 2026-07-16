@@ -1,0 +1,246 @@
+.shell-outlook {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f0f0f0;
+  color: #1a1a1a;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
+}
+
+.ol-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0078d4;
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+.ol-window-controls {
+  opacity: 0.9;
+  letter-spacing: 0.35em;
+}
+
+.ol-ribbon {
+  display: flex;
+  gap: 0.15rem;
+  background: #f3f3f3;
+  border-bottom: 1px solid #d0d0d0;
+  padding: 0.25rem 0.4rem 0;
+}
+
+.ol-ribbon-tab {
+  padding: 0.35rem 0.7rem;
+  color: #444;
+  border-radius: 4px 4px 0 0;
+}
+
+.ol-ribbon-tab.active {
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-bottom-color: #fff;
+  color: #0078d4;
+  font-weight: 600;
+}
+
+.ol-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 180px minmax(220px, 320px) 1fr;
+  min-height: 0;
+  border-bottom: 1px solid #d0d0d0;
+}
+
+@media (max-width: 900px) {
+  .ol-body {
+    grid-template-columns: 1fr;
+  }
+  .ol-folders {
+    display: none;
+  }
+}
+
+.ol-folders {
+  background: #f3f3f3;
+  border-right: 1px solid #d4d4d4;
+  padding: 0.5rem 0;
+  overflow: auto;
+}
+
+.ol-folder-head {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666;
+  padding: 0.55rem 0.75rem 0.25rem;
+  font-weight: 700;
+}
+
+.ol-folder {
+  padding: 0.35rem 0.75rem;
+  cursor: default;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ol-folder.active {
+  background: #c7e0f4;
+  color: #000;
+  font-weight: 600;
+}
+
+.ol-count {
+  color: #0078d4;
+  font-size: 0.8rem;
+}
+
+.ol-list {
+  background: #fff;
+  border-right: 1px solid #d4d4d4;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ol-list-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #444;
+}
+
+.ol-list-items {
+  overflow: auto;
+  flex: 1;
+}
+
+.ol-msg {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.ol-msg:hover {
+  background: #f5f9fc;
+}
+
+.ol-msg.active {
+  background: #c7e0f4;
+}
+
+.ol-msg-from {
+  font-weight: 600;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ol-msg-subject {
+  font-size: 0.86rem;
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ol-msg-preview {
+  font-size: 0.78rem;
+  color: #666;
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ol-reading {
+  background: #fff;
+  overflow: auto;
+  min-height: 0;
+}
+
+.ol-reading-head {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.ol-reading-head h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.ol-reading-meta {
+  display: flex;
+  gap: 1rem;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.ol-reading-body {
+  padding: 1rem 1.25rem 2rem;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.ol-reading-body h2 {
+  font-size: 1.05rem;
+  margin: 1.2rem 0 0.45rem;
+}
+
+.ol-reading-body p {
+  margin: 0 0 0.7rem;
+}
+
+.ol-reading-body blockquote {
+  margin: 0.6rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid #0078d4;
+  background: #f3f9fd;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.ol-reading-body pre {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  padding: 0.65rem;
+  overflow: auto;
+}
+
+.ol-reading-body ul,
+.ol-reading-body ol {
+  padding-left: 1.3rem;
+}
+
+.ol-empty {
+  padding: 2rem;
+  color: #888;
+}
+
+.ol-statusbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0.55rem;
+  background: #0078d4;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.ol-statusbar span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

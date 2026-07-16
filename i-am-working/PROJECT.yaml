@@ -1,0 +1,11 @@
+schema: project/v1
+name: i-am-working
+type: app
+language: ts
+owners:
+    - user:admin
+capabilities:
+    - http
+capability_config:
+    http:
+        openapi: openapi.yaml

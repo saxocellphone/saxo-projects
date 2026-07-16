@@ -1,0 +1,145 @@
+.shell-tech {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100%;
+  background: #0b1220;
+  color: #e6edf7;
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+@media (max-width: 800px) {
+  .shell-tech {
+    grid-template-columns: 1fr;
+  }
+  .tech-sidebar {
+    display: none;
+  }
+}
+
+.tech-sidebar {
+  border-right: 1px solid #243352;
+  background: #0e1729;
+  padding: 1rem 0.85rem;
+  overflow: auto;
+}
+
+.tech-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: #7eb6ff;
+  margin-bottom: 0.75rem;
+}
+
+.tech-search {
+  border: 1px solid #243352;
+  background: #111a2d;
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  color: #7d8aa5;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+.tech-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.tech-nav-item {
+  color: #b7c4de;
+  text-decoration: none;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+}
+
+.tech-nav-item:hover {
+  background: rgba(126, 182, 255, 0.08);
+  color: #fff;
+}
+
+.tech-nav-item.level-3 {
+  padding-left: 1rem;
+  font-size: 0.82rem;
+  color: #8b9bb8;
+}
+
+.tech-main {
+  overflow: auto;
+  padding: 1.75rem 2rem 3rem;
+  max-width: 920px;
+}
+
+.tech-kicker {
+  margin: 0 0 0.35rem;
+  color: #7eb6ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.tech-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.85rem;
+  letter-spacing: -0.02em;
+}
+
+.tech-summary {
+  color: #9aa9c4;
+  margin: 0 0 1rem;
+}
+
+.tech-body {
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
+.tech-body h2 {
+  margin: 1.6rem 0 0.55rem;
+  font-size: 1.25rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #243352;
+}
+
+.tech-body h3 {
+  margin: 1.2rem 0 0.45rem;
+  font-size: 1.05rem;
+  color: #c9d7f2;
+}
+
+.tech-body p {
+  margin: 0.7rem 0;
+}
+
+.tech-body a {
+  color: #8ec2ff;
+}
+
+.tech-body blockquote {
+  margin: 1rem 0;
+  padding: 0.55rem 0.9rem;
+  border-left: 3px solid #3d7eff;
+  background: rgba(61, 126, 255, 0.08);
+  color: #c8d6ef;
+}
+
+.tech-body pre {
+  background: #111a2d;
+  border: 1px solid #243352;
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  overflow: auto;
+}
+
+.tech-body code {
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+.tech-body ul,
+.tech-body ol {
+  padding-left: 1.3rem;
+}
