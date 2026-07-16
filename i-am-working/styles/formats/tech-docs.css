@@ -1,0 +1,123 @@
+/* Technical documentation (Read-the-Docs / MDN vibe) */
+.format-tech-docs {
+  background: #0b1220;
+  color: #e6edf7;
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  font-size: calc(15px * var(--format-scale, 1));
+  line-height: 1.65;
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.format-tech-docs .doc-header {
+  background: linear-gradient(90deg, #12203a, #0f1a30);
+  border-bottom: 1px solid #243352;
+  padding: 1.4rem 1.75rem 1.1rem;
+}
+
+.format-tech-docs .doc-kicker {
+  margin: 0 0 0.35rem;
+  color: #7eb6ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.format-tech-docs .doc-title {
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.format-tech-docs .doc-body {
+  padding: 1.4rem 1.75rem 2rem;
+}
+
+.format-tech-docs h2,
+.format-tech-docs h3,
+.format-tech-docs h4 {
+  margin: 1.6rem 0 0.55rem;
+  line-height: 1.25;
+  color: #f3f7ff;
+}
+
+.format-tech-docs h2 {
+  font-size: 1.25rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #243352;
+}
+
+.format-tech-docs h3 {
+  font-size: 1.05rem;
+  color: #c9d7f2;
+}
+
+.format-tech-docs p {
+  margin: 0.7rem 0;
+}
+
+.format-tech-docs a {
+  color: #8ec2ff;
+}
+
+.format-tech-docs code,
+.format-tech-docs pre {
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  background: #111a2d;
+  border: 1px solid #243352;
+  border-radius: 6px;
+}
+
+.format-tech-docs code {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.9em;
+}
+
+.format-tech-docs pre {
+  padding: 0.9rem 1rem;
+  overflow: auto;
+}
+
+.format-tech-docs pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.format-tech-docs blockquote {
+  margin: 1rem 0;
+  padding: 0.55rem 0.9rem;
+  border-left: 3px solid #3d7eff;
+  background: rgba(61, 126, 255, 0.08);
+  color: #c8d6ef;
+}
+
+.format-tech-docs ul,
+.format-tech-docs ol {
+  padding-left: 1.3rem;
+}
+
+.format-tech-docs li {
+  margin: 0.3rem 0;
+}
+
+.format-tech-docs table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92em;
+}
+
+.format-tech-docs th,
+.format-tech-docs td {
+  border: 1px solid #243352;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+}
+
+.format-tech-docs th {
+  background: #132038;
+}
