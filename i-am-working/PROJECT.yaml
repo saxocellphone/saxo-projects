@@ -1,0 +1,13 @@
+schema: project/v1
+name: i-am-working
+type: app
+language: ts
+owners:
+    - user:admin
+capabilities:
+    - build
+capability_config:
+    build:
+        engine: bazel
+        target_patterns:
+            - //i-am-working/...
