@@ -1,8 +1,11 @@
 /**
  * Fetch HTML for arbitrary public URLs.
- * 1) Direct fetch (CORS-friendly hosts)
- * 2) Public CORS relay (allorigins) as best-effort for demos
- * 3) Jina Reader as readability-oriented fallback
+ *
+ * Order:
+ * 1) Same-origin /api/fetch (local server.py proxy) — reliable, no CORS
+ * 2) Direct browser fetch (only CORS-friendly hosts)
+ * 3) Public CORS relays (best-effort)
+ * 4) Jina Reader (often requires auth; last resort)
  */
 
 /**
@@ -15,7 +18,17 @@ export async function fetchPageHtml(url) {
     throw new Error("Only http(s) URLs are supported");
   }
 
-  // 1) Direct
+  const errors = [];
+
+  // 1) Local / same-origin proxy — preferred
+  try {
+    const result = await fetchViaLocalProxy(target.toString());
+    if (result) return result;
+  } catch (err) {
+    errors.push(`local-proxy: ${errMessage(err)}`);
+  }
+
+  // 2) Direct
   try {
     const res = await fetch(target.toString(), {
       redirect: "follow",
@@ -26,28 +39,34 @@ export async function fetchPageHtml(url) {
       if (html && html.length > 40) {
         return { html, finalUrl: res.url || target.toString(), via: "direct" };
       }
+    } else {
+      errors.push(`direct: HTTP ${res.status}`);
     }
-  } catch {
-    // continue
+  } catch (err) {
+    errors.push(`direct: ${errMessage(err)}`);
   }
 
-  // 2) allorigins raw
-  try {
-    const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(target.toString())}`;
-    const res = await fetch(proxy);
-    if (res.ok) {
+  // 3) Public relays
+  for (const [name, build] of PUBLIC_RELAYS) {
+    try {
+      const res = await fetch(build(target.toString()));
+      if (!res.ok) {
+        errors.push(`${name}: HTTP ${res.status}`);
+        continue;
+      }
       const html = await res.text();
       if (html && html.length > 40 && !looksLikeProxyError(html)) {
-        return { html, finalUrl: target.toString(), via: "allorigins" };
+        return { html, finalUrl: target.toString(), via: name };
       }
+      errors.push(`${name}: empty or blocked body`);
+    } catch (err) {
+      errors.push(`${name}: ${errMessage(err)}`);
     }
-  } catch {
-    // continue
   }
 
-  // 3) Jina reader — returns markdown/text view of the page
+  // 4) Jina reader
   try {
-    const jina = `https://r.jina.ai/http://${target.host}${target.pathname}${target.search}`;
+    const jina = `https://r.jina.ai/${target.toString()}`;
     const res = await fetch(jina, { headers: { Accept: "text/plain" } });
     if (res.ok) {
       const text = await res.text();
@@ -58,20 +77,88 @@ export async function fetchPageHtml(url) {
           via: "jina",
         };
       }
+    } else {
+      errors.push(`jina: HTTP ${res.status}`);
     }
-  } catch {
-    // continue
+  } catch (err) {
+    errors.push(`jina: ${errMessage(err)}`);
   }
 
   throw new Error(
-    "Could not fetch this URL from the browser (CORS or bot protection). Try a Reddit/HN link, a public blog, or use a demo URL.",
+    "Could not fetch this URL from the browser.\n\n" +
+      "Run the app with the local proxy so any public site works:\n" +
+      "  cd i-am-working && python3 server.py\n" +
+      "  open http://127.0.0.1:5173\n\n" +
+      `Details: ${errors.slice(0, 4).join(" · ")}`,
   );
 }
 
+/**
+ * @param {string} url
+ * @returns {Promise<{ html: string, finalUrl: string, via: string } | null>}
+ */
+async function fetchViaLocalProxy(url) {
+  // Prefer same origin (server.py). Also try absolute 5173 if opened as file://
+  const candidates = [
+    `/api/fetch?url=${encodeURIComponent(url)}`,
+    `http://127.0.0.1:5173/api/fetch?url=${encodeURIComponent(url)}`,
+    `http://localhost:5173/api/fetch?url=${encodeURIComponent(url)}`,
+  ];
+
+  let lastErr = null;
+  for (const endpoint of candidates) {
+    try {
+      const res = await fetch(endpoint);
+      // Missing proxy → 404 HTML from static server
+      const ctype = res.headers.get("content-type") || "";
+      if (!ctype.includes("application/json")) {
+        lastErr = new Error("proxy not running (not JSON)");
+        continue;
+      }
+      const data = await res.json();
+      if (!res.ok) {
+        lastErr = new Error(data.error || `HTTP ${res.status}`);
+        // If proxy is up but upstream failed, don't pretend it's missing
+        if (res.status >= 400 && data.error) throw lastErr;
+        continue;
+      }
+      if (data.html && data.html.length > 40) {
+        return {
+          html: data.html,
+          finalUrl: data.finalUrl || url,
+          via: data.via || "local-proxy",
+        };
+      }
+      lastErr = new Error("empty html from proxy");
+    } catch (err) {
+      lastErr = err;
+      // network error on 127.0.0.1 → try next candidate
+    }
+  }
+  if (lastErr) throw lastErr;
+  return null;
+}
+
+const PUBLIC_RELAYS = [
+  [
+    "allorigins",
+    (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  ],
+  [
+    "codetabs",
+    (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ],
+];
+
 function looksLikeProxyError(html) {
-  return /just a moment|cf-browser-verification|access denied|enable javascript/i.test(
+  return /just a moment|cf-browser-verification|access denied|enable javascript|AuthenticationRequiredError/i.test(
     html.slice(0, 2000),
   );
+}
+
+function errMessage(err) {
+  if (err instanceof TypeError) return "blocked by CORS or network";
+  return err instanceof Error ? err.message : String(err);
 }
 
 /** Convert Jina plain/markdown-ish output into simple HTML for the extractor */
@@ -129,7 +216,6 @@ function jinaTextToHtml(text, sourceUrl) {
       flushPara();
       continue;
     }
-    // skip jina metadata headers
     if (/^(URL Source|Published Time|Markdown Content):/i.test(line)) continue;
     para.push(line.trim());
   }
