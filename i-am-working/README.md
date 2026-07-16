@@ -28,7 +28,15 @@ Deep links:
 http://127.0.0.1:5173/?url=demo://reddit&shell=outlook
 http://127.0.0.1:5173/?url=https://news.ycombinator.com/&shell=outlook
 http://127.0.0.1:5173/?url=https://www.gutenberg.org/files/9662/9662-h/9662-h.htm&shell=google-docs
+http://127.0.0.1:5173/?url=demo://article&shell=google-docs&chrome=0
 ```
+
+### Hide the top bar
+
+- Click **Hide bar** in the control strip
+- Or press **`b`** (when not focused in an input) to toggle
+- When hidden, use the floating **Show bar** control (top-right) or press **`b`** again
+- Preference is remembered in `localStorage`; use `?chrome=0` to start hidden
 
 ## How fetch works
 

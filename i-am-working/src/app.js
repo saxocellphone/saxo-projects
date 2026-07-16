@@ -2,6 +2,8 @@ import { loadUrl, DEMO_LINKS } from "./ingest/index.js";
 import { selectItem, wordCount } from "./model.js";
 import { SHELLS, defaultShellFor, renderShell } from "./shells/index.js";
 
+const CHROME_STORAGE_KEY = "iamworking.chromeHidden";
+
 /**
  * @typedef {{
  *   url: string,
@@ -9,7 +11,8 @@ import { SHELLS, defaultShellFor, renderShell } from "./shells/index.js";
  *   doc: import('./model.js').Doc | null,
  *   status: 'idle'|'loading'|'ready'|'error',
  *   error: string,
- *   autoShell: boolean
+ *   autoShell: boolean,
+ *   chromeHidden: boolean
  * }} State
  */
 
@@ -22,6 +25,7 @@ export function createApp(root) {
     status: "idle",
     error: "",
     autoShell: true,
+    chromeHidden: false,
   };
 
   const ui = {
@@ -32,6 +36,8 @@ export function createApp(root) {
     stage: root.querySelector("#stage"),
     openOriginal: root.querySelector("#btn-original"),
     demos: root.querySelector("#demo-links"),
+    hideChrome: root.querySelector("#btn-hide-chrome"),
+    showChrome: root.querySelector("#btn-show-chrome"),
   };
 
   // Populate shell select
@@ -75,6 +81,22 @@ export function createApp(root) {
     }
   });
 
+  ui.hideChrome?.addEventListener("click", () => setChromeHidden(true));
+  ui.showChrome?.addEventListener("click", () => setChromeHidden(false));
+
+  // Toggle chrome: "b" (bar), except when typing in inputs
+  window.addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target instanceof HTMLElement ? e.target.tagName : "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || e.target?.isContentEditable) {
+      return;
+    }
+    if (e.key === "b" || e.key === "B") {
+      e.preventDefault();
+      setChromeHidden(!state.chromeHidden);
+    }
+  });
+
   // Outlook message clicks (delegation)
   ui.stage.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-item-id]");
@@ -89,11 +111,31 @@ export function createApp(root) {
   const params = new URLSearchParams(location.search);
   const qUrl = params.get("url");
   const qShell = params.get("shell");
+  const qChrome = params.get("chrome");
   if (qShell && SHELLS.some((s) => s.id === qShell)) {
     state.shellId = qShell;
     state.autoShell = false;
     ui.shellSelect.value = qShell;
   }
+  // chrome=0|hidden|off  or  chrome=1|shown|on
+  if (qChrome != null) {
+    const hide =
+      qChrome === "0" ||
+      qChrome === "hidden" ||
+      qChrome === "off" ||
+      qChrome === "false";
+    setChromeHidden(hide, { persist: false, sync: false });
+  } else {
+    try {
+      if (localStorage.getItem(CHROME_STORAGE_KEY) === "1") {
+        setChromeHidden(true, { persist: false, sync: false });
+      }
+    } catch {
+      /* private mode */
+    }
+  }
+  applyChromeVisibility();
+
   if (qUrl) {
     ui.urlInput.value = qUrl;
     openUrl();
@@ -160,14 +202,44 @@ export function createApp(root) {
       ui.status.textContent = "Ready";
       ui.status.dataset.kind = "";
     }
+    applyChromeVisibility();
+  }
+
+  /**
+   * @param {boolean} hidden
+   * @param {{ persist?: boolean, sync?: boolean }} [opts]
+   */
+  function setChromeHidden(hidden, opts = {}) {
+    const { persist = true, sync = true } = opts;
+    state.chromeHidden = !!hidden;
+    applyChromeVisibility();
+    if (persist) {
+      try {
+        localStorage.setItem(CHROME_STORAGE_KEY, state.chromeHidden ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+    }
+    if (sync) syncQuery();
+  }
+
+  function applyChromeVisibility() {
+    root.classList.toggle("chrome-hidden", state.chromeHidden);
+    if (ui.showChrome) {
+      ui.showChrome.hidden = !state.chromeHidden;
+    }
   }
 
   function syncQuery() {
-    if (!state.doc) return;
+    if (!state.doc && !state.url) return;
     const p = new URLSearchParams();
-    p.set("url", state.url || state.doc.sourceUrl);
+    if (state.url || state.doc?.sourceUrl) {
+      p.set("url", state.url || state.doc.sourceUrl);
+    }
     p.set("shell", state.shellId);
-    const next = `${location.pathname}?${p.toString()}`;
+    if (state.chromeHidden) p.set("chrome", "0");
+    const qs = p.toString();
+    const next = qs ? `${location.pathname}?${qs}` : location.pathname;
     history.replaceState(null, "", next);
   }
 
