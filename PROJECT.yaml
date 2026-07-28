@@ -1,0 +1,17 @@
+# Root glue project: owns only what no deeper PROJECT.yaml claims - the
+# top-level README/OWNERS, AGENTS.md, .claude/ and .github/. The real code
+# lives in per-folder projects (hello/, i-am-working/); this manifest exists
+# so repo-glue changes resolve a merge policy instead of falling to the
+# fail-closed unowned-path default.
+schema: project/v1
+name: repo
+type: other
+owners:
+    - user:admin
+# Whole-repo auto-approve zone: the merge gate reads owner approvals as
+# satisfied and agent-policy findings as acknowledged, so an agent lands
+# here with no human in the loop. Required checks are NOT waived. On the
+# root manifest this covers every path; a project takes the gate back with
+# 'auto_approve: false' in its own manifest, and the deployment vetoes the
+# mechanism entirely with the disable_auto_approve org setting.
+auto_approve: true
