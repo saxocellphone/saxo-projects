@@ -9,3 +9,18 @@ capabilities:
 capability_config:
     http:
         openapi: openapi.yaml
+# Server and frontend are separate npm roots with their own tsconfigs, so
+# they typecheck independently - separate checks, so a failure names the half
+# that broke.
+#
+# NO iam-server-check yet, deliberately: server/src/adapters.ts does not
+# typecheck today (13 pre-existing errors - the parsed-JSON values are typed
+# {} / unknown and are indexed without narrowing). Declaring the check before
+# fixing those would gate every future i-am-working change on a red that
+# predates it. Add it in the same change that fixes adapters.ts:
+#     - name: iam-server-check
+#       command: cd i-am-working/server && npm ci && npm run typecheck
+ci:
+  checks:
+    - name: iam-frontend-check
+      command: cd i-am-working/frontend && npm ci && npm run typecheck

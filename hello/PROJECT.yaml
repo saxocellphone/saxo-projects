@@ -4,10 +4,11 @@ type: library
 language: go
 owners:
     - user:admin
-capabilities:
-    - build
-capability_config:
-    build:
-        engine: bazel
-        target_patterns:
-            - //hello/...
+# The bazel build capability that `runko project create` scaffolded here is
+# gone: it pointed at //hello/... in a repo that has no MODULE.bazel, so the
+# fail-closed build adapter could never resolve it. This is a plain Go module
+# checked by the go toolchain instead.
+ci:
+  checks:
+    - name: hello-check
+      command: cd hello && go build ./... && go vet ./...

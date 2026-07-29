@@ -171,14 +171,20 @@ jobs:
       #     runko-ci is already installed above; add ONLY what your `ci.checks`
       #     commands need. Guard each with `if: success() || failure()` so the
       #     result still reports if an earlier step failed. ---
-      # - uses: actions/setup-go@v5
-      #   if: success() || failure()
-      #   with: { go-version: '1.25', cache: true }   # pin >= your go.mod's `go` directive
+      # Caching is off on both. setup-go's `cache: true` wants a go.sum and
+      # hello has no dependencies, so there is none; the action FAILS rather
+      # than degrades when its cache key file is missing. setup-node's
+      # `cache: npm` looks for a lockfile at the repo root, and ours live in
+      # i-am-working/{server,frontend} - it would need cache-dependency-path,
+      # which is not worth a failure mode for a 2s install.
+      - uses: actions/setup-go@v5
+        if: success() || failure()
+        with: { go-version: '1.25', cache: false }
       # - uses: bazel-contrib/setup-bazel@0.15.0
       #   if: success() || failure()
-      # - uses: actions/setup-node@v4
-      #   if: success() || failure()
-      #   with: { node-version: '24', cache: npm }
+      - uses: actions/setup-node@v4
+        if: success() || failure()
+        with: { node-version: '24' }
       # ---------------------------------------------------------------
       # First report is already clickable in the Runko UI; the completed
       # report overwrites with the same URL.
